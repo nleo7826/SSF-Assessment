@@ -3,6 +3,11 @@
 	<head>
 		<meta charset="UTF-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<style>
+			.error {
+			  color: red;
+			}
+		  </style>
 		<title>Panucci's Pizza</title>
 		<link rel="stylesheet" href="/styles.css">
 	</head>
@@ -13,7 +18,7 @@
 			<h2>Panucci's Pizza</h2>
 		</div>
 
-		<form>
+		<form action="order" th:action="@{/order}" th:object="${order}" method="post">
 			<div>
 				<h2>Select a pizza</h2>
 				<table>
@@ -55,14 +60,14 @@
 								<img src="/images/TrioFormaggio.png" class="pizza">
 							</div>
 							<div>
-								<input type="radio" name="pizza" value="trioformaggio"> Trio Formaggio
+								<input type="radio" th:field="*{pizzaType}" name="pizza" value="trioformaggio"> Trio Formaggio
 							</div>
 						</td>
 					</tr>
 					<tr>
 						<td>Size:</td>
 						<td>
-							<select name="size" >
+							<select name="size" required>
 								<option value="sm">Small</option>
 								<option value="md">Medium</option>
 								<option value="lg">Large</option>
@@ -72,7 +77,8 @@
 					<tr>
 						<td>Quantity:</td>
 						<td>
-							<input type="number" min="1" name="quantity"> 
+							<input type="number" min="1" max="10" name="quantity" required> 
+							
 						</td>
 					</tr>
 					<tr>
