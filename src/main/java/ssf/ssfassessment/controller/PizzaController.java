@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.SessionAttribute;
+
 import jakarta.validation.Valid;
+import ssf.ssfassessment.model.Customer;
 import ssf.ssfassessment.model.Order;
 
 
@@ -17,50 +20,44 @@ import ssf.ssfassessment.model.Order;
     @RequestMapping("/")
     public class PizzaController {
         
-        
         @Autowired
         Order o;
-
 
         @PostMapping(path = "order", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
         public String handlePizzaOrder(@RequestParam("pizza") String type,
                                         @RequestParam("size") String size,
-                                        @RequestParam("quantity") String quantity) {
+                                        @RequestParam("quantity") String quantity, Model model) {
+                                    
             o = new Order(type, size, quantity);
+            Double orderCost = o.calculate();
+            o.setOrderCost(orderCost);
+            System.out.println(">>> " + o.getOrderCost());
+            model.addAttribute("order", o);
             return "redirect:/order";
         }
+                       
 
         @GetMapping(path="/order")
-        public String showOrder(Model model) {
-            model.addAttribute("order", o);
-            System.out.print(">>> " + o.getType());
-            System.out.print(">>> " + o.getSize());
-            System.out.print(">>> " + o.getQuantity());
+        public String showOrder(@Valid Order order, BindingResult binding, Model model) {
+            // binding.hasErrors always true
+            // if (binding.hasErrors()) {
+            //     return "redirect:/";
+            // }
+
             return "order";
         }
-
-        public String saveContact(@Valid Order order, BindingResult binding, Model model) {
+        
+        @GetMapping(path="/confirm")
+        public String saveCustomer(@Valid Customer cust, BindingResult binding, Model model) {
             if (binding.hasErrors()) {
                 return "index";
             }
-            return "order";
+            // System.out.println(">>> " + o.getType());
+            // System.out.println(">>> " + o.getSize());
+            // System.out.println(">>> " + o.getQuantity());
+            // String orderCost = o.calculate();
+            // o.setOrderCost(orderCost);
+            // model.addAttribute("custOrder", o);
+            return "confirm";
         }
     }
-
-    // private Boolean checkPizzaType(String pizzaType) {
-        
-    //     switch (pizzaType) {
-    //         case bella:
-    //             return true;
-    //         case margherita:
-    //             return true;
-    //         case marinara:
-    //             return true;
-    //         case spianatacalabrese:
-    //             return true;
-    //         case trioformaggio:
-    //             return true;
-    //         default:
-    //             return false;
-    //     }
-    // }
